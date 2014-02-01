@@ -1,0 +1,14 @@
+.fixed-column {
+	position:absolute; /* position fixed for IE6 */
+	/*Expression*/
+	top:expression(55+((e=document.documentElement.scrollTop)?e:document.body.scrollTop)+'px'); 
+	left:expression(55+((e=document.documentElement.scrollLeft)?e:document.body.scrollLeft)+'px');width:220px;height:720px;
+}
+.top-bg {width:100%;height:110px;background:url('../images/top-bg.png') top center;z-index:99;position:absolute;
+top:expression(0+((e=document.documentElement.scrollTop)?e:document.body.scrollTop)+'px'); 
+left:expression(0+((e=document.documentElement.scrollLeft)?e:document.body.scrollLeft)+'px');}
+
+.home h1 {line-height:70px;}
+ul#nav {font-family:dustismo,"century gothic";}
+.bottom-bg {background:none;}
+.download {width:215px;height:206px;position:absolute;top:0px;left:0px;z-index:110;}
