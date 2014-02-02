@@ -35,4 +35,5 @@ $ContentFiltering = "Off"
 $ContentFilterBlackList = "audio/mpeg video/mpeg"
 
 # PHP Cgi Path
-$PHPCgiPath = "C:\Program Files (x86)\PHP\v5.3\php-cgi.exe" # WebPI Location
+$PHPCgiPath = ($env:PATH).Split(";") | Select-String "PHP"
+$PHPCgiPath = [string]$PHPCgiPath + "\php-cgi.exe"
