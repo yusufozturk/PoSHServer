@@ -360,7 +360,11 @@ function Get-PoSHPHPContent {
 
     .EXAMPLE
      
-        Get-PoSHPHPContent -File "C:\test.php" -QueryString "&" -PHPCgiPath "C:\php.exe"
+        Get-PoSHPHPContent -PHPCgiPath "C:\php.exe" -File "C:\test.php" -PoSHPHPGET "test=value"
+		
+    .EXAMPLE
+     
+        Get-PoSHPHPContent -PHPCgiPath "C:\php.exe" -File "C:\test.php" -PoSHPHPPOST "test=value"
 		
 #>
 
@@ -369,22 +373,86 @@ param (
 
     [Parameter(
         Mandatory = $true,
+        HelpMessage = 'PHP-Cgi Path')]
+    [string]$PHPCgiPath,
+
+    [Parameter(
+        Mandatory = $true,
         HelpMessage = 'File Path')]
     [string]$File,
 	
     [Parameter(
         Mandatory = $false,
-        HelpMessage = 'Query String')]
-    [string]$QueryString,
+        HelpMessage = 'PHP GET String')]
+    [string]$PoSHPHPGET,
 	
     [Parameter(
-        Mandatory = $true,
-        HelpMessage = 'PHP-Cgi Path')]
-    [string]$PHPCgiPath
+        Mandatory = $false,
+        HelpMessage = 'PHP POST String')]
+    [string]$PoSHPHPPOST
 )
 
-	$PHPOutput = &$PHPCgiPath -f "$File" "$QueryString"
-	$PHPOutput
+	# Set PHP Environment
+	$env:GATEWAY_INTERFACE="CGI/1.1"
+	$env:SCRIPT_FILENAME="$File"
+	$env:REDIRECT_STATUS="200"
+	$env:SERVER_PROTOCOL="HTTP/1.1"
+	$env:HTTP_ACCEPT="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+	$env:CONTENT_TYPE="application/x-www-form-urlencoded"
+	
+	if ($PoSHPHPPOST)
+	{
+		# Set PHP POST Environment
+		$env:REQUEST_METHOD="POST"
+		$PHP_CONTENT_LENGTH = $PoSHPHPPOST.Length
+		$env:CONTENT_LENGTH="$PHP_CONTENT_LENGTH"
+		
+		# Get PHP Content
+		$PHPOutput = "$PoSHPHPPOST" | &$PHPCgiPath
+	}
+	else
+	{
+		# Set PHP GET Environment
+		$env:REQUEST_METHOD="GET"
+		$env:QUERY_STRING="$PoSHPHPGET"
+		
+		# Get PHP Content
+		$PHPOutput = &$PHPCgiPath
+	}
+	
+	# Get PHP Header Line Number
+	$PHPHeaderLineNumber = ($PHPOutput | Select-String -Pattern "^$")[0].LineNumber
+	
+	# Get PHP Header
+	$PHPHeader = $PHPOutput | Select -First $PHPHeaderLineNumber
+	
+	# Get Redirection Location
+	$GetPHPLocation = $PHPHeader | Select-String "Location:"
+	
+	# Check Redirection Location
+	if ($GetPHPLocation)
+	{
+		$GetPHPLocation = $GetPHPLocation -match 'Location: (.*)/?'
+		if ($GetPHPLocation -eq $True) { $PHPRedirectionURL = $Matches[1] } else { $PHPRedirectionURL = $Null; }
+	}
+	
+	# Redirect to Location
+	if ($PHPRedirectionURL)
+	{
+		# Redirection Output
+		$PHPRedirection = '<html>'
+		$PHPRedirection += '<script type="text/javascript">'
+		$PHPRedirection += 'window.location = "' + $PHPRedirectionURL + '"'
+		$PHPRedirection += '</script>'
+		$PHPRedirection += '</html>'
+		$PHPRedirection
+	}
+	else
+	{	
+		# Output PHP Content
+		$PHPOutput = $PHPOutput | Select -Skip $PHPHeaderLineNumber
+		$PHPOutput
+	}
 }
 
 function Get-PoSHPostStream {
@@ -508,46 +576,6 @@ param (
 			}
 		}
 		Write-Output $Properties
-	}
-}
-
-function Get-PoSHPHPQuery {
-
-<#
-    .SYNOPSIS
-     
-        Function to get php query
-
-    .EXAMPLE
-     
-        Get-PoSHPHPQuery -Request $Request
-		
-#>
-
-[CmdletBinding(SupportsShouldProcess = $true)]
-param (
-
-    [Parameter(
-        Mandatory = $false,
-        HelpMessage = 'PHP GET String')]
-    [string]$PoSHPHPGET,
-	
-    [Parameter(
-        Mandatory = $false,
-        HelpMessage = 'PHP POST String')]
-    [string]$PoSHPHPPOST
-)
-
-	if ($PoSHPHPGET)
-	{
-		$PHPQueryString = $PoSHPHPGET
-		$PHPQueryString		
-	}
-	
-	if ($PoSHPHPPOST)
-	{
-		$PHPQueryString = $PoSHPHPPOST
-		$PHPQueryString		
 	}
 }
 
