@@ -1,0 +1,11 @@
+Hello,
+
+PoSHServer is a free product but it still has hidden costs like hosting, ssl certificates etc.
+
+I'll be glad if you can support this project via PayPal donation:
+
+https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=S5RUQ9DBHJQMW
+
+Thanks for your support!
+
+Yusuf.
