@@ -8,7 +8,6 @@
 # Basic Authentication
 if ($BasicAuthentication -eq "On")
 {
-	$Listener.AuthenticationSchemes = "Basic";
 	$Identity = $Context.User.Identity;
 	$PoSHUserName = $Identity.Name
 	$PoSHUserPassword = $Identity.Password
@@ -17,7 +16,6 @@ if ($BasicAuthentication -eq "On")
 # Windows Authentication
 if ($WindowsAuthentication -eq "On")
 {
-	$Listener.AuthenticationSchemes = "IntegratedWindowsAuthentication";
 	$Identity = $Context.User.Identity;
 	$PoSHUserName = $Identity.Name
 }

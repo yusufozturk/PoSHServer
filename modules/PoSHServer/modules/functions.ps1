@@ -527,11 +527,29 @@ param (
 		$Properties | Add-Member Noteproperty PoSHPostStream $PoSHPostStream
 		foreach ($Post in $PoSHCommand)
 		{
-            $Post = $Post.Replace("%26","&")
-			$Post = $Post.Split("=")
-			$PostName = $Post[0].Replace("%3D","=")
-			$PostValue = $Post[1].Replace("%3D","=")
-			$Properties | Add-Member Noteproperty $PostName $PostValue
+			$PostValue = $Post.Replace("%26","&")
+			$PostContent = $PostValue.Split("=")
+			$PostName = $PostContent[0].Replace("%3D","=")
+			$PostValue = $PostContent[1].Replace("%3D","=")
+
+			if ($PostName.EndsWith("[]"))
+			{
+				$PostName = $PostName.Substring(0,$PostName.Length-2)
+
+				if (!$Properties."$PostName")
+				{
+					$Properties | Add-Member NoteProperty $Postname (@())
+					$Properties."$PostName" = $PostValue
+				}
+				else
+				{
+					$Properties."$PostName" += $PostValue
+				}
+			} 
+			else
+			{
+				$Properties | Add-Member NoteProperty $PostName $PostValue
+			}
 		}
 		Write-Output $Properties
 	}
