@@ -495,7 +495,6 @@ param (
 		$PoSHCommand = $PoSHCommand.Replace("%23","#")
 		$PoSHCommand = $PoSHCommand.Replace("%24","$")
 		$PoSHCommand = $PoSHCommand.Replace("%25","%")
-		$PoSHCommand = $PoSHCommand.Replace("%26","&")
 		$PoSHCommand = $PoSHCommand.Replace("%27","'")
 		$PoSHCommand = $PoSHCommand.Replace("%28","(")
 		$PoSHCommand = $PoSHCommand.Replace("%29",")")
@@ -508,7 +507,6 @@ param (
 		$PoSHCommand = $PoSHCommand.Replace("%3A",":")
 		$PoSHCommand = $PoSHCommand.Replace("%3B",";")
 		$PoSHCommand = $PoSHCommand.Replace("%3C","<")
-		$PoSHCommand = $PoSHCommand.Replace("%3D","=")
 		$PoSHCommand = $PoSHCommand.Replace("%3E",">")
 		$PoSHCommand = $PoSHCommand.Replace("%3F","?")
 		$PoSHCommand = $PoSHCommand.Replace("%5B","[")
@@ -529,9 +527,10 @@ param (
 		$Properties | Add-Member Noteproperty PoSHPostStream $PoSHPostStream
 		foreach ($Post in $PoSHCommand)
 		{
+            $Post = $Post.Replace("%26","&")
 			$Post = $Post.Split("=")
-			$PostName = $Post[0]
-			$PostValue = $Post[1]
+			$PostName = $Post[0].Replace("%3D","=")
+			$PostValue = $Post[1].Replace("%3D","=")
 			$Properties | Add-Member Noteproperty $PostName $PostValue
 		}
 		Write-Output $Properties
