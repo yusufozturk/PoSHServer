@@ -1,4 +1,4 @@
-# Copyright (C) 2014 Yusuf Ozturk
+ï»¿# Copyright (C) 2014 Yusuf Ozturk
 # This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 # This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
@@ -67,7 +67,7 @@ table tr.alt td,table tr.alt th{background-color:#ebebeb;}
 </div> 
 <div class="content-container"> 
  <fieldset><legend>Most likely causes:</legend> 
-  <ul> 	<li>•It is possible that a handler mapping is missing. By default, the static file handler processes all content.</li> 	<li>•The feature you are trying to use may not be installed.</li> 	<li>•The appropriate MIME map is not enabled for the Web site or application.</li> <li>•If PHP is not installed.</li></ul> 
+  <ul> 	<li>â€¢It is possible that a handler mapping is missing. By default, the static file handler processes all content.</li> 	<li>â€¢The feature you are trying to use may not be installed.</li> 	<li>â€¢The appropriate MIME map is not enabled for the Web site or application.</li> <li>â€¢If PHP is not installed.</li></ul> 
  </fieldset> 
 </div> 
 <div class="content-container"> 
