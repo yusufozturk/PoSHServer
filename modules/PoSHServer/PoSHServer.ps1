@@ -231,6 +231,7 @@ param (
 			if ($PoSHModulePathTest)
 			{
 				$PoSHModulePath = $ModulePath
+                break;
 			}
 		}
 	}
