@@ -285,11 +285,11 @@ param (
 		}
 		else
 		{
-			Write-Warning "Job ID is not exist."
+			Write-Warning "Job ID does not exist."
 			Write-Warning "Aborting.."
 
 			$ResultCode = "-1"
-			$ResultMessage = "Job ID is not exist."
+			$ResultMessage = "Job ID does not exist."
 		}
 	}
 	
@@ -357,11 +357,11 @@ param (
 			$CheckTask = schtasks.exe | where {$_ -like "PoSHServer-$TaskHostname-$TaskPort*"}
 			if ($CheckTask)
 			{
-				Write-Warning "This job is already exist. You should run it from Scheduled Jobs."
+				Write-Warning "This job already exists. You should run it from Scheduled Jobs."
 				Write-Warning "Aborting.."
 				
 				$ResultCode = "-1"
-				$ResultMessage = "This job is already exist. You should run it from Scheduled Jobs."
+				$ResultMessage = "This job already exists. You should run it from Scheduled Jobs."
 			}
 			else
 			{
@@ -850,11 +850,23 @@ param (
 						{
 							try
 							{
-								$Response.ContentType = "text/html"
-								$Response.StatusCode = [System.Net.HttpStatusCode]::OK
+                                # Need to be able to override these
+                                $returnstring = "$(. $File)" # executes code here into a strings
+
+                                # TODO : return errors to browser
+
+                                if($Response.ContentType -eq $null)
+                                {
+								    $Response.ContentType = "text/html"
+                                }
+                                if($Response.StatusCode -eq $null)
+                                {
+								    $Response.StatusCode = [System.Net.HttpStatusCode]::OK
+                                }
 								$LogResponseStatus = $Response.StatusCode
-								$Response = New-Object IO.StreamWriter($Response.OutputStream,[Text.Encoding]::UTF8)
-								$Response.WriteLine("$(. $File)")
+								$ResponseStream = New-Object IO.StreamWriter($Response.OutputStream,[Text.Encoding]::UTF8)
+								$ResponseStream.Write($returnstring)
+                                $ResponseStream.Flush()
 							}
 							catch
 							{
@@ -868,8 +880,9 @@ param (
 								$Response.ContentType = "text/xml"
 								$Response.StatusCode = [System.Net.HttpStatusCode]::OK
 								$LogResponseStatus = $Response.StatusCode
-								$Response = New-Object IO.StreamWriter($Response.OutputStream,[Text.Encoding]::UTF8)
-								$Response.WriteLine("$(. $File)")
+								$ResponseStream = New-Object IO.StreamWriter($Response.OutputStream,[Text.Encoding]::UTF8)
+								$ResponseStream.WriteLine("$(. $File)")
+                                $ResponseStream.Flush()
 							}
 							catch
 							{
@@ -896,8 +909,9 @@ param (
 										$Response.ContentType = "text/html"
 										$Response.StatusCode = [System.Net.HttpStatusCode]::NotFound
 										$LogResponseStatus = $Response.StatusCode
-										$Response = New-Object IO.StreamWriter($Response.OutputStream,[Text.Encoding]::UTF8)
-										$Response.WriteLine("$(. $PoSHModulePath\modules\phpsecurityerror.ps1)")
+										$ResponseStream = New-Object IO.StreamWriter($Response.OutputStream,[Text.Encoding]::UTF8)
+										$ResponseStream.WriteLine("$(. $PoSHModulePath\modules\phpsecurityerror.ps1)")
+                                        $ResponseStream.Flush()                                        
 									}
 									else
 									{
@@ -906,8 +920,9 @@ param (
 										$PHPContentOutput = Set-PHPEncoding -PHPOutput $PHPContentOutput
 										$Response.StatusCode = [System.Net.HttpStatusCode]::OK
 										$LogResponseStatus = $Response.StatusCode
-										$Response = New-Object IO.StreamWriter($Response.OutputStream,[Text.Encoding]::UTF8)
-										$Response.WriteLine("$PHPContentOutput")
+										$ResponseStream = New-Object IO.StreamWriter($Response.OutputStream,[Text.Encoding]::UTF8)
+										$ResponseStream.WriteLine("$PHPContentOutput")
+                                        $ResponseStream.Flush()
 									}
 								}
 								else
@@ -915,8 +930,9 @@ param (
 									$Response.ContentType = "text/html"
 									$Response.StatusCode = [System.Net.HttpStatusCode]::NotFound
 									$LogResponseStatus = $Response.StatusCode
-									$Response = New-Object IO.StreamWriter($Response.OutputStream,[Text.Encoding]::UTF8)
-									$Response.WriteLine("$(. $PoSHModulePath\modules\phpcgierror.ps1)")						
+									$ResponseStream = New-Object IO.StreamWriter($Response.OutputStream,[Text.Encoding]::UTF8)
+									$ResponseStream.WriteLine("$(. $PoSHModulePath\modules\phpcgierror.ps1)")	
+                                    $ResponseStream.Flush()					
 								}
 							}
 							catch
@@ -934,6 +950,7 @@ param (
 								$Response.StatusCode = [System.Net.HttpStatusCode]::OK
 								$LogResponseStatus = $Response.StatusCode
 								$Response.OutputStream.Write($FileContent, 0, $FileContent.Length)
+                                $ResponseStream.Flush()
 							}
 							catch
 							{
