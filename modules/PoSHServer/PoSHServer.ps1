@@ -231,6 +231,7 @@ param (
 			if ($PoSHModulePathTest)
 			{
 				$PoSHModulePath = $ModulePath
+                break;
 			}
 		}
 	}
@@ -762,7 +763,15 @@ param (
 					if ($WindowsAuthentication -eq "On") { $Listener.AuthenticationSchemes = "IntegratedWindowsAuthentication"; }
 
 					# Open Connection
-					$Context = $Listener.GetContext()
+					$task = $Listener.GetContextAsync();
+                    while( -not $Context )
+                    {
+                        if( $task.Wait(500) )
+                        {
+				            $Context = $task.Result
+                        }
+                        sleep -Milliseconds 100;
+                    }
 					
 					# Authentication Module
 					. $PoSHModulePath\modules\authentication.ps1
@@ -1081,7 +1090,15 @@ param (
 				if ($WindowsAuthentication -eq "On") { $Listener.AuthenticationSchemes = "IntegratedWindowsAuthentication"; }
 
 				# Open Connection
-				$Context = $Listener.GetContext()
+                $task = $Listener.GetContextAsync();
+                while( -not $Context )
+                {
+                    if( $task.Wait(500) )
+                    {
+				        $Context = $task.Result
+                    }
+                    sleep -Milliseconds 100;
+                }
 				
 				# Authentication Module
 				. $PoSHModulePath\modules\authentication.ps1
